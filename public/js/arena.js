@@ -779,8 +779,6 @@ socket.on('update', (data) => {
     elements.score.textContent = `${score.home} - ${score.away}`;
     elements.timer.textContent = formatTimer(score.elapsed);
 
-    // Ignora atualizações com alta latência
-    if (Date.now() - data.timestamp > 1000) return;
     drawGame();
 });
 
