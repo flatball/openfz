@@ -256,41 +256,26 @@ function drawGame() {
  * Desenha o campo de jogo
  */
 function drawField() {
-    // Fundo e padrão do gramado
+    // Fundo do gramado
     ctx.fillStyle = '#4F6F52';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const width = 1400, height = 750;
     const rectX = (canvas.width - width) / 2, rectY = (canvas.height - height) / 2;
 
-    // Gramado diagonal
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(rectX, rectY, width, height);
-    ctx.clip();
-    ctx.translate(rectX + width / 2, rectY + height / 2);
-    ctx.rotate(Math.PI / -4);
-
-    const stripeWidth = 50;
-    const diagonalLength = Math.sqrt(width ** 2 + height ** 2);
-    for (let i = -diagonalLength; i < diagonalLength * 2; i += stripeWidth) {
-        ctx.fillStyle = (Math.floor(i / stripeWidth) % 2 === 0 ? '#5A7B5F' : '#4F6F52');
-        ctx.fillRect(i, -diagonalLength, stripeWidth, diagonalLength * 3);
-    }
-    ctx.restore();
-
     // Linhas do campo
     ctx.strokeStyle = '#fff';
     ctx.lineWidth = 3;
     ctx.strokeRect(rectX, rectY, width, height);
 
-    // Linha central e círculo
+    // Linha central
     const centerX = rectX + width / 2;
     ctx.beginPath();
     ctx.moveTo(centerX, rectY);
     ctx.lineTo(centerX, rectY + height);
     ctx.stroke();
 
+    // Círculo central
     const centerY = rectY + height / 2;
     ctx.beginPath();
     ctx.arc(centerX, centerY, height / 6, 0, 2 * Math.PI);
