@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FZ: Futebol 2D Online">
+    <link rel="apple-touch-icon" sizes="192x192" href="images/icons/192x192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="images/icons/512x512.png">
+    <title>OpenFZ</title>
+    <style>
+        :root {
+            --bg-overlay: rgba(34, 34, 34, 0.9);
+
+            --panel-bg: #2a2a35;
+            --highlight-color: #d8d8d8;
+            --placeholder: rgb(216, 216, 216, 0.3);
+            --btn-bg: #2a2a35;
+            --btn-bg-alt: #169976;
+            --btn-hover: #3f3f4a;
+            --btn-hover-alt: #1DCD9F;
+            
+            --gap-small: 0.125rem;
+            --gap-medium: 0.5rem;
+            --gap-large: 1rem;
+            --gap-xlarge: 2rem;
+
+            --padding-small: 0.5rem;
+            --padding-medium: 1rem;
+            --padding-large: 2rem;
+            --padding-xlarge: 4rem;
+
+            --font-color: #d8d8d8;
+            --font-size-small: 0.875rem;
+            --font-size-medium: 1rem;
+            --font-size-large: 1.125rem;
+            --font-family-body: 'Funnel Sans', sans-serif;
+
+            --border-radius: 6px;
+            --border-color: #3f3f4a;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-family-body);
+            font-size: var(--font-size-medium);
+        }
+
+        html, body {
+            -webkit-user-select: none;
+            user-select: none;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background: linear-gradient(135deg, #15151c, #2a2a35);
+        }
+
+        main {
+            width: 100%;
+            height: 100%;
+            padding: var(--padding-large);
+            backdrop-filter: saturate(100%) blur(8px);
+            will-change: backdrop-filter;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: flex;
+        }
+
+        #roomsSection,
+        #dashboardArea {
+            width: 100%;
+            height: 100%;
+            max-width: 768px;
+            margin: 0 auto;
+        }
+
+        #dashboardArea > div {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #navButtons {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            flex-direction: row;
+            gap: var(--gap-medium);
+            overflow: hidden;
+        }
+
+        #roomsButton,
+        #nicknameButton {
+            color: var(--font-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            flex: 1;
+            max-width: 200px;
+        }
+
+        #playerInfo {
+            display: flex;
+            gap: var(--gap-small);
+        }
+
+        #onlinePlayersCount {
+            color: var(--font-color);
+            text-align: center;
+            font-weight: bold;
+        }
+
+        #selectedSkin {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 3;
+        }
+
+        #skinWrapper {
+            position: relative;
+            width: 128px;
+            height: 140px; /* um pouco maior pra comportar sombra */
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        #skinImage {
+            width: 128px;
+            height: 128px;
+            object-fit: contain;
+            position: relative;
+            animation: float 2s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        #shadow {
+            position: absolute;
+            bottom: -20px;
+            width: 60px;
+            height: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            filter: blur(4px);
+            z-index: 1;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(0.85);
+            }
+        }
+
+        #availableSkins {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: var(--gap-medium)
+        }
+
+        .skin {
+            width: 64px;
+            height: 64px;
+        }
+
+        #rooms {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: var(--gap-medium);
+        }
+
+        #roomListHeader {
+            flex-shrink: 0;
+            color: #FFFFFF;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #availableRooms {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: var(--gap-small);
+        }
+
+        #roomListName {
+            flex: 1;
+            padding: var(--padding-small) var(--padding-medium);
+        }
+
+        #roomListCount, 
+        #roomListPass {
+            width: 100px;
+            padding: var(--padding-small);
+            text-align: center;
+        }
+
+        .room-item {
+            width: 100%;  
+            color: var(--font-color);
+            background: var(--btn-bg-alt);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .room-item:hover {
+            background-color: var(--btn-hover);
+        }
+
+        #roomCount,
+        #roomHasPass,
+        #roomName {
+            background-color: var(--btn-bg);
+            padding: var(--padding-small);
+        }
+
+        #roomCount, #roomHasPass {
+            text-align: center; 
+            width: 100px;
+        }
+
+        #roomName {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: var(--padding-small) var(--padding-medium);
+        }
+
+        #roomActionButtons {
+            flex-shrink: 0;
+            display: flex;
+            font-size: var(--font-size-large);
+            gap: var(--gap-medium);
+            overflow: hidden;
+        }
+
+        #createRoomButton,
+        #refreshRoomsButton,
+        #dashboardButton {
+            width: 100%;
+            color: var(--font-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+        }
+
+        input[type="text"],
+        #roomPasswordInput,
+        #passwordInput {
+            padding: 14px 16px;
+            border: none;
+            outline: none;
+            color: var(--font-color);
+            background: var(--btn-bg);
+            border: solid 1px var(--border-color);
+            border-radius: var(--border-radius);
+        }
+
+        input[type="text"]::placeholder,
+        #roomPasswordInput::placeholder, 
+        #passwordInput::placeholder {
+            color:var(--placeholder);
+        }
+
+        input[type="button"] {
+            padding: 14px 16px;
+            border: none;
+            outline: none;
+            color: var(--font-color);
+            background: var(--btn-bg);
+        }
+
+        #navButtons > input[type="button"],
+        #updatesContainer {
+            font-size: var(--font-size-large);
+            color: var(--font-color);
+            background: var(--btn-bg);
+        }
+
+        #navButtons > input[type="button"]:hover,
+        input[type="button"]:hover,
+        #createRoomButton:hover,
+        #refreshRoomsButton:hover,
+        #dashboardButton:hover {
+            background-color: var(--btn-hover);
+            cursor: pointer;
+        }
+
+        #updatesContainer {
+            height: 100%;
+            padding: var(--padding-medium);
+        }
+
+        #updatesContainer > p {
+            text-align: center;
+        }
+
+        .popupOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(21, 21, 28, 0.8);
+        }
+
+        .popup {
+            position: relative;
+            padding: var(--padding-medium);
+            min-width: 300px;
+            max-width: 90%;
+            max-height: 90%;
+            background: var(--panel-bg);
+            color: var(--font-color);
+            text-align: center;
+            flex-direction: column;
+            gap: var(--gap-medium);
+            overflow-y: auto;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .popup > p {
+            margin-bottom: 0.5rem;
+            font-size: var(--font-size-large);
+        }
+
+        .popup > input[type="button"] {
+            border-radius: var(--border-radius);
+            background: var(--btn-bg-alt);
+        }
+
+        .popup > input[type="button"]:hover {
+            background: var(--btn-hover-alt);
+        }
+
+        @media (orientation: portrait) {
+            #navButtons {
+                flex-direction: column;
+            }
+
+            #roomActionButtons {
+                flex-direction: column-reverse;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div id="dashboardArea" class="section">
+            <div>
+                <p id="onlinePlayersCount">0 online</p>
+                <div id="selectedSkin">
+                    <div id="skinWrapper">
+                        <img id="skinImage"/>
+                        <div id="shadow"></div>
+                    </div>
+                </div>
+                
+                <div id="navButtons">
+                    <input id="roomsButton" type="button" value="ROOMS">
+                    <input id="nicknameButton" type="button" value="CHANGE NICK">
+                </div>
+            </div>
+        </div>
+        <div id="roomsSection" class="section">
+            <div id="rooms">
+                <div id="availableRooms"></div>
+                <div id="roomActionButtons">
+                    <input id="dashboardButton" type="button" value="Go back">
+                    <input id="refreshRoomsButton" type="button" value="Refresh rooms">
+                    <input id="createRoomButton" type="button" value="Create room">
+                </div>
+            </div>
+        </div>
+    </main>
+    <div class="popupOverlay" id="popupOverlayContainer">
+        <div class="popup" id="nicknamePopup">
+            <p>Choose your nick</p>
+            <input id="nicknameInput" type="text" placeholder="Choose your nickname" maxlength="24" autocomplete="off">
+            <input id="playerInfoButton" type="button" value="Continue">
+        </div>
+        <div class="popup" id="createRoomPopup">
+            <p>New room</p>
+            <input id="roomNameInput" type="text" placeholder="Room name" maxlength="24" autocomplete="off">
+            <input id="roomPasswordInput" type="password" placeholder="Password (optional)" maxlength="6">
+            <input id="createRoom" type="button" value="Create">
+        </div>
+        <div class="popup" id="passwordPopup">
+            <p>Enter password</p>
+            <input id="passwordInput" type="password" placeholder="Password" maxlength="6" autocomplete="off">
+            <input id="enterRoomButton" type="button" value="Go to room">
+        </div>
+        <div class="popup" id="skinPopup">
+            <div id="availableSkins"></div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuid.min.js"></script>
+    <script>
+        const elements = {
+            skinImage: document.getElementById('skinImage'),
+            nicknameInput: document.getElementById('nicknameInput'),
+            popupOverlayContainer: document.getElementById('popupOverlayContainer'),
+            nicknamePopup: document.getElementById('nicknamePopup'),
+            createRoomPopup: document.getElementById('createRoomPopup'),
+            passwordPopup: document.getElementById('passwordPopup'),
+            onlinePlayersCount: document.getElementById('onlinePlayersCount'),
+            skinPopup: document.getElementById('skinPopup'),
+            nicknameButton: document.getElementById('nicknameButton'),
+            availableSkins: document.getElementById('availableSkins'),
+            availableRooms: document.getElementById('availableRooms'),
+            refreshRoomsButton: document.getElementById('refreshRoomsButton'),
+            createRoomButton: document.getElementById('createRoomButton'),
+            createRoom: document.getElementById('createRoom'),
+            enterRoomButton: document.getElementById('enterRoomButton'),
+            roomNameInput: document.getElementById('roomNameInput'),
+            roomPasswordInput: document.getElementById('roomPasswordInput'),
+            passwordInput: document.getElementById('passwordInput'),
+            playerInfoButton: document.getElementById('playerInfoButton'),
+            sections: document.querySelectorAll('.section'),
+            dashboardArea: document.getElementById('dashboardArea'),
+            roomsSection: document.getElementById('roomsSection'),
+            roomsButton: document.getElementById('roomsButton'),
+            dashboardButton: document.getElementById('dashboardButton'),
+        };
+
+        let cache = JSON.parse(localStorage.getItem('playerCache')) || { nickname: "", skin: "0.png"};
+        let nickname = cache.nickname;
+        let skin = cache.skin;
+        let roomWithPass;
+
+        elements.nicknameInput.value = nickname;
+        elements.skinImage.src = `images/skins/${skin}`;
+
+        const eventHandlers = {
+            showSection: function (sectionToShow) {
+                elements.sections.forEach(section => {
+                    if (section === sectionToShow) {
+                        section.classList.add('active');
+                    } else {
+                        section.classList.remove('active');
+                    }
+                });
+            },
+            setPlayerInfo: function () {
+                nickname = elements.nicknameInput.value.trim();
+                eventHandlers.closePopUp();
+            },
+            roomList: function () {
+                fetch('/rooms')
+                    .then(response => response.json())
+                    .then(rooms => renderRooms(rooms))
+                    .catch(error => console.error('Error fetching rooms:', error));
+            },
+            skinsList: function () {
+                elements.availableSkins.innerHTML = '';
+                const totalSkins = 6;
+
+                for (let i = 1; i <= totalSkins; i++) {
+                    const skinImage = document.createElement('img');
+                    skinImage.src = `images/skins/${i - 1}.png`;
+                    skinImage.className = 'skin';
+
+                    skinImage.addEventListener('click', () => {
+                        skin = `${i - 1}.png`;
+                        elements.skinImage.src = skinImage.src;
+                        eventHandlers.closePopUp();
+                    });
+
+                    elements.availableSkins.appendChild(skinImage);
+                }
+
+                eventHandlers.showPopUp('skinPopup');
+            },
+            joinRoom: function (room) {
+                if (nickname) {
+                    const metadata = { nickname, skin, roomData: room };
+                    sessionStorage.setItem("metadata", JSON.stringify(metadata));
+                    localStorage.setItem("playerCache", JSON.stringify({ nickname: nickname, skin: skin }));
+                    window.location.href = "pages/arena.html";
+                } else {
+                    alert("Please enter a valid nickname.");
+                }
+            },
+            closePopUp: function () {
+                elements.popupOverlayContainer.style.display = "none";
+                document.querySelectorAll('.popup').forEach(popup => popup.style.display = "none");
+            },
+            showPopUp: function (popUpId) {
+                eventHandlers.closePopUp();
+                elements.popupOverlayContainer.style.display = "flex";
+                elements[popUpId].style.display = "flex";
+            }
+        };  
+
+        function renderRooms(rooms) {
+            let onlinePlayersCount = 0;
+            
+            elements.availableRooms.innerHTML = `
+                <div id="roomListHeader">
+                    <p id="roomListName">Name</p>
+                    <p id="roomListPass">Online</p>
+                    <p id="roomListPass">Pass</p>
+                </div>
+            `;
+            
+            rooms.forEach(room => {
+                onlinePlayersCount += room.count;
+                
+                const roomItem = document.createElement('div');
+                roomItem.className = 'room-item';
+                roomItem.addEventListener('click', () => handleRoomClick(room));
+
+                roomItem.innerHTML = `
+                    <p id="roomName">${room.name}</p>
+                    <p id="roomCount">${room.count}</p>
+                    <p id="roomHasPass">${room.password ? 'Yes' : 'No'}</p>
+                `;
+        
+                elements.availableRooms.appendChild(roomItem);
+            });
+            
+            elements.onlinePlayersCount.textContent = `${onlinePlayersCount} online`;
+        }
+
+        function handleRoomClick(room) {
+            if (room.password) {
+                roomWithPass = room;
+                eventHandlers.showPopUp('passwordPopup');
+            } else {
+                eventHandlers.joinRoom(room);
+            }
+        }
+
+        function initializeEvents() {
+            elements.dashboardButton.addEventListener('click', () => eventHandlers.showSection(dashboardArea));
+            elements.roomsButton.addEventListener('click', () => eventHandlers.showSection(roomsSection));
+            elements.popupOverlayContainer.addEventListener('click', eventHandlers.closePopUp);
+            elements.skinImage.addEventListener('click', eventHandlers.skinsList);
+            elements.refreshRoomsButton.addEventListener('click', eventHandlers.roomList);
+            elements.nicknameButton.addEventListener('click', () => eventHandlers.showPopUp('nicknamePopup'));
+            elements.playerInfoButton.addEventListener('click', eventHandlers.setPlayerInfo);
+            elements.createRoomButton.addEventListener('click', () => eventHandlers.showPopUp('createRoomPopup'));
+
+            ['nicknamePopup', 'createRoomPopup', 'passwordPopup', 'skinPopup'].forEach(id => {
+                elements[id].addEventListener('click', (event) => event.stopPropagation());
+            });
+
+            elements.createRoom.addEventListener('click', () => {
+                const roomName = elements.roomNameInput.value.trim();
+                const roomPassword = elements.roomPasswordInput.value.trim();
+
+                if (!roomName) {
+                    alert("Room name is required.");
+                    return;
+                }
+
+                const room = {
+                    name: roomName,
+                    password: roomPassword || null,
+                    id: uuid.v4()
+                };
+                eventHandlers.joinRoom(room);
+            });
+
+            elements.enterRoomButton.addEventListener('click', () => {
+                const enteredPassword = elements.passwordInput.value.trim();
+                if (enteredPassword === roomWithPass.password) {
+                    eventHandlers.joinRoom(roomWithPass);
+                } else {
+                    alert("Incorrect password.");
+                }
+            });
+        }
+
+        initializeEvents();
+        eventHandlers.showSection(dashboardArea);
+        eventHandlers.roomList();
+    </script>
+</body>
+</html>

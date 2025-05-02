@@ -1,0 +1,449 @@
+/* ===== RESET E CONFIGURAÇÕES GERAIS ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    -webkit-user-select: none;
+    user-select: none;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    overflow: hidden;
+    overscroll-behavior: none;
+    touch-action: none;
+}
+
+/* ===== ELEMENTOS PRINCIPAIS ===== */
+#camera {
+    width: 100vw;
+    height: 100svh;
+    overflow: hidden;
+    position: relative;
+}
+
+#canvas {
+    position: fixed;
+    z-index: 2;
+}
+
+#overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: #121212;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#loader {
+    width: 36px;
+    height: 36px;
+    border: 4px solid #fff;
+    border-top: 4px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ===== CONTROLES E HUD ===== */
+.referee {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    top: 10px;
+    right: 10px;
+    z-index: 5;
+    background: linear-gradient(135deg, #15151c, #2a2a35);
+    color: #d8d8d8;
+    border: 1px solid #3f3f4a;
+    border-radius: 6px;
+    font-size: 12px;
+    padding: 0.5rem;
+}
+
+i {
+    color: #ffffff;
+}
+
+#joy, #kick, #pass {
+    position: fixed;
+    z-index: 4;
+}
+
+#kick, #pass {
+    width: 100px;
+    height: 100px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+#kick {
+    background-image: url('../images/kick.png');
+}
+
+#pass {
+    background-image: url('../images/pass.png');
+}
+
+/* ===== PLACAR E TEMPORIZADOR ===== */
+#scoreboard {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    background: linear-gradient(135deg, #15151c, #2a2a35);
+    color: #d8d8d8;
+    border: 1px solid #3f3f4a;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    overflow: hidden;
+}
+
+.score-panel {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.team-color {
+    height: 30px;
+    width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #E0E0E0;
+}
+
+.score-value {
+    margin: 0 10px;
+}
+
+#timer {
+    height: 30px;
+    padding: 2px 12px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== CHAT E MENSAGENS ===== */
+#lastMessage {
+    position: fixed;
+    width: 25%;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0px;
+    text-align: center;
+    overflow: hidden;
+    background: linear-gradient(135deg, #15151c, #2a2a35);
+    font-size: 12px;
+    border: 1px solid #3f3f4a;
+    border-radius: 6px 6px 0 0;
+    padding: 0.5rem;
+    z-index: 6;
+}
+
+#lastMessage > p {
+    display: block;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chat-box {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    height: 100%;
+    overflow: hidden;
+    gap: 4px;
+}
+
+.chat-messages {
+    flex: 1;
+    background: linear-gradient(135deg, #15151c, #2a2a35);
+    border: 1px solid #3f3f4a;
+    border-radius: 6px;
+    overflow-y: auto;
+    overflow-wrap: break-word;
+    padding: 0.5rem;
+}
+
+#inputMessage {
+    height: auto;
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 6px;
+    outline: none;
+    transition: background-color 0.3s;
+    background: linear-gradient(135deg, #15151c, #2a2a35);
+    color: #d8d8d8;
+    border: 1px solid #3f3f4a;
+}
+
+#inputMessage::placeholder {
+    color: #f5f5f54b;
+}
+
+/* ===== MODAIS (REFEREE, SETTINGS, CHAT) ===== */
+#refereeDiv, #settingsDiv, #chatDiv {
+    position: fixed;
+    padding: 100px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+#refereeDiv > div {
+    background: linear-gradient(135deg, #15151c, #2a2a35);
+    color: #d8d8d8;
+    border: 1px solid #3f3f4a;
+    border-radius: 6px;
+    width: 100%;
+    height: 100%;   
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#playerList, #settings {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    padding: 10px;
+}
+
+#settings {
+    background: linear-gradient(135deg, #15151c, #2a2a35);
+    color: #d8d8d8;
+    border: 1px solid #3f3f4a;
+    border-radius: 6px;
+    width: auto;
+    height: auto;
+    align-items: center;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* ===== LISTAS DE JOGADORES ===== */
+.list-container {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    border-radius: 6px;
+    padding: 4px;
+}
+
+.team-button {
+    border: none;
+    width: 100%;
+    padding: 0.5rem;
+    color: #E0E0E0;
+    background: transparent;
+    font-size: 18px;
+}
+
+.player-grid {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+}
+
+.player-card {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 5px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.player-card.selected {
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    animation: borderBlink 1s infinite;
+    border-radius: 8px;
+}
+
+@keyframes borderBlink {
+    0%, 100% { border-color: rgba(255, 255, 255, 0.2); }
+    50% { border-color: rgba(255, 255, 255, 0.8); }
+}
+
+/* ===== CONFIGURAÇÕES ===== */
+#controlsSettings {
+    display: flex;
+}
+
+#generalSettings {
+    width: 100%;
+}
+
+#joySettings, #kickSettings, #passSettings, #generalSettings {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    color: #E0E0E0;
+    font-size: 10px;
+}
+
+#joySettings > p, #kickSettings > p, #passSettings > p, #generalSettings > p {
+    margin-bottom: 0.5rem;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* ===== CONTROLES DE FORMULÁRIO ===== */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    width: 100%;
+}
+
+input[type="range"]:focus {
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    background-color: #333333;
+    border-radius: 0.5rem;
+    height: 0.5rem;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; 
+    appearance: none;
+    margin-top: -4px;
+    background-color: #E0E0E0;
+    border-radius: 0.5rem;
+    height: 1rem;
+    width: 1rem;
+}
+
+input[type="range"]:focus::-webkit-slider-thumb {
+    outline: 3px solid #E0E0E0;
+    outline-offset: 0.125rem;
+}
+
+input[type="range"]::-moz-range-track {
+    background-color: #333333;
+    border-radius: 0.5rem;
+    height: 0.5rem;
+}
+
+input[type="range"]::-moz-range-thumb {
+    background-color: #E0E0E0;
+    border: none; 
+    border-radius: 0.5rem;
+    height: 1rem;
+    width: 1rem;
+}
+
+input[type="range"]:focus::-moz-range-thumb {
+    outline: 3px solid #E0E0E0;
+    outline-offset: 0.125rem;
+}
+
+/* ===== BOTÕES DE AÇÃO ===== */
+#refereeActionButtons {
+    width: 100%;
+    border-top: 1px solid #3f3f4a;
+}
+
+#refereeActionButtons > button {
+    flex: 1;
+    border: none;
+    width: 100%;
+    padding: 10px;
+    background-color: transparent;
+    color: #E0E0E0;
+}
+
+#refereeActionButtons > button:hover {
+    cursor: pointer;
+    background-color: #3f3f4a;
+}
+
+/* ===== ANIMAÇÃO DE GOL ===== */
+@font-face {
+    src: url("https://www.axis-praxis.org/fonts/webfonts/MetaVariableDemo-Set.woff2") format("woff2");
+    font-family: "Meta";
+    font-style: normal;
+    font-weight: normal;
+}
+
+#goal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-variation-settings: "wght" 900, "ital" 1;
+    font-size: 5rem;
+    text-align: center;
+    font-family: "Meta", sans-serif;
+    color: transparent;
+    z-index: 6;
+}
+
+#author {
+    position: absolute;
+    color: #ffffff;
+    left: 50%;
+    bottom: 20%;
+    transform: translate(-50%, -20%);
+    font-size: 16px;
+    font-weight: 600;
+    z-index: 6;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (orientation: portrait) {
+    #refereeActionButtons {
+        flex-direction: column;
+    }
+}
+
+/* ===== ELEMENTOS ADICIONAIS ===== */
+#ping {
+    position: fixed;
+    left: 10px;
+    top: 10px;
+    color: #ffffff8a;
+    z-index: 5;
+    font-size: 12px;
+}
