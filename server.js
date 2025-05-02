@@ -101,7 +101,7 @@ class Ball {
         this.radius = 10;
         this.mass = 5;
         this.friction = 0.982;
-        this.acceleration = 0.3; // Influencia força do chute/colisão
+        this.acceleration = 0.14; // Influencia força do chute/colisão
         this.reset();
     }
 
