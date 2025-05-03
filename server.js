@@ -255,7 +255,7 @@ class Player {
         this.radius = 20;
         this.mass = 10;
         this.range = 10; // Alcance do chute
-        this.speed = 2.5;
+        this.speed = 2.4;
         this.angle = null; // Ângulo de movimento (null = parado)
         this.x = null; // Posição X (null se espectador)
         this.y = null; // Posição Y (null se espectador)
@@ -316,7 +316,7 @@ class Player {
         if (distanceToBall <= detectionRange) {
             this.lastKickTime = now;
             const angle = Math.atan2(ball.y - this.y, ball.x - this.x);
-            const kickForce = isPass ? 8 : 10;
+            const kickForce = isPass ? 4 : 7.5;
             ball.applyKick(angle, kickForce, this);
             return true; // Chute bem-sucedido
         }
