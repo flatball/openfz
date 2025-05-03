@@ -101,7 +101,7 @@ class Ball {
         this.radius = 10;
         this.mass = 5;
         this.friction = 0.982;
-        this.acceleration = 0.14; // Influencia força do chute/colisão
+        this.acceleration = 0.2; // Influencia força do chute/colisão
         this.reset();
     }
 
@@ -231,8 +231,8 @@ class Ball {
      * @param {Player} kicker - O jogador que chutou.
      */
     applyKick(angle, force, kicker) {
-        this.velocityX = Math.cos(angle) * force;
-        this.velocityY = Math.sin(angle) * force;
+        this.velocityX += Math.cos(angle) * force;
+        this.velocityY += Math.sin(angle) * force;
 
         // Atualiza marcador/assistente
         if (!this.scorer || this.scorer.id !== kicker.id) {
@@ -255,7 +255,7 @@ class Player {
         this.radius = 20;
         this.mass = 10;
         this.range = 10; // Alcance do chute
-        this.speed = 2.4;
+        this.speed = 2.3;
         this.angle = null; // Ângulo de movimento (null = parado)
         this.x = null; // Posição X (null se espectador)
         this.y = null; // Posição Y (null se espectador)
@@ -316,7 +316,7 @@ class Player {
         if (distanceToBall <= detectionRange) {
             this.lastKickTime = now;
             const angle = Math.atan2(ball.y - this.y, ball.x - this.x);
-            const kickForce = isPass ? 4 : 7.5;
+            const kickForce = isPass ? 6 : 9;
             ball.applyKick(angle, kickForce, this);
             return true; // Chute bem-sucedido
         }
@@ -546,26 +546,29 @@ class Room {
                 }
             }
 
-            // Colisão Jogador <-> Bola
             if (PhysicsUtils.isCollidingCircle(p1.x, p1.y, p1.radius, this.ball.x, this.ball.y, this.ball.radius)) {
                 const { x: pushX, y: pushY } = PhysicsUtils.resolveCollision(
                     p1.x, p1.y, p1.radius, this.ball.x, this.ball.y, this.ball.radius, p1.mass, this.ball.mass
                 );
+            
                 // Afasta bola e jogador
                 this.ball.x += pushX; this.ball.y += pushY;
                 p1.x -= pushX / 2; p1.y -= pushY / 2; // Jogador sente menos impacto
-
-                // Impulso na bola
-                const angle = Math.atan2(pushY, pushX);
+            
+                // Condução de bola com ângulo arredondado
+                const rawAngle = Math.atan2(pushY, pushX);
+                const step = Math.PI / 16; // 32 direções
+                const angle = Math.round(rawAngle / step) * step;
+            
                 this.ball.velocityX = (this.ball.velocityX + Math.cos(angle) * this.ball.acceleration * 1.6) * 0.95;
                 this.ball.velocityY = (this.ball.velocityY + Math.sin(angle) * this.ball.acceleration * 1.6) * 0.95;
-
+            
                 // Atualiza último toque (potencial marcador/assistente)
                 if (!this.ball.scorer || this.ball.scorer.id !== p1.id) {
                     this.ball.assister = this.ball.scorer;
                     this.ball.scorer = { id: p1.id, nickname: p1.nickname, team: p1.team };
                 }
-            }
+            }            
         }
     }
 
@@ -882,7 +885,7 @@ class GameServer {
             const player = playerInstance;
             if (player?.team && player.x !== null) {
                 if (typeof angle === 'number') {
-                    const step = Math.PI / 8; // 2π / 16
+                    const step = Math.PI / 16; // 32 direções
                     player.angle = Math.round((angle % (2 * Math.PI)) / step) * step;
                 } else {
                     player.angle = null;
