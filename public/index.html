@@ -470,6 +470,11 @@
 
         const eventHandlers = {
             showSection: function (sectionToShow) {
+                if (sectionToShow === elements.roomsSection && !nickname) {
+                    eventHandlers.showPopUp('nicknamePopup');
+                    return;
+                }
+
                 elements.sections.forEach(section => {
                     if (section === sectionToShow) {
                         section.classList.add('active');
